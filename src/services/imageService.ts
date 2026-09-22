@@ -63,11 +63,33 @@ export class ImageApiError extends Error {
   }
 }
 
+async function readApiResponse(response: Response): Promise<Record<string, any>> {
+  const contentType = response.headers.get('content-type')?.toLowerCase() || '';
+  const responseText = await response.text();
+  const isJson = contentType.includes('application/json') || contentType.includes('+json');
+
+  if (!isJson) {
+    const isHtml = contentType.includes('text/html') || /^\s*<!doctype html|^\s*<html/i.test(responseText);
+    throw new ImageApiError(
+      isHtml
+        ? 'The image API returned an HTML page instead of JSON. GitHub Pages only hosts the frontend; run the Express server and use its URL for image generation.'
+        : `The image API returned an unexpected response (${contentType || 'unknown content type'}).`,
+      'API_INVALID_RESPONSE'
+    );
+  }
+
+  try {
+    return JSON.parse(responseText);
+  } catch {
+    throw new ImageApiError('The image API returned invalid JSON.', 'API_INVALID_RESPONSE');
+  }
+}
+
 export async function fetchProviderInfo(): Promise<ProviderInfo> {
   try {
     const res = await fetch('/api/images/provider');
     if (!res.ok) throw new Error('Failed to fetch provider info');
-    return await res.json();
+    return (await readApiResponse(res)) as ProviderInfo;
   } catch (err) {
     return {
       activeProvider: 'pollinations',
@@ -115,11 +137,11 @@ export async function switchProvider(provider: string): Promise<ProviderInfo> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ provider }),
   });
-  const data = await res.json();
+  const data = await readApiResponse(res);
   if (!res.ok || !data.success) {
     throw new ImageApiError(data.error || 'Failed to switch provider');
   }
-  return data;
+  return data as ProviderInfo;
 }
 
 export async function generateImageApi(params: GenerateImageParams): Promise<GeneratedImage> {
@@ -131,7 +153,7 @@ export async function generateImageApi(params: GenerateImageParams): Promise<Gen
     body: JSON.stringify(params),
   });
 
-  const data = await response.json();
+  const data = await readApiResponse(response);
 
   if (!response.ok || !data.success) {
     throw new ImageApiError(
@@ -162,7 +184,7 @@ export async function editImageApi(params: EditImageParams): Promise<GeneratedIm
     body: JSON.stringify(params),
   });
 
-  const data = await response.json();
+  const data = await readApiResponse(response);
 
   if (!response.ok || !data.success) {
     throw new ImageApiError(
