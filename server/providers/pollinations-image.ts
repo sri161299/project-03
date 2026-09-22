@@ -59,6 +59,16 @@ export function resolvePollinationsModel(requestedModel?: string): string {
   return candidate;
 }
 
+function resolvePollinationsBaseUrl(): string {
+  const configured = process.env.POLLINATIONS_API_BASE_URL?.trim();
+  return (configured || "https://image.pollinations.ai").replace(/\/+$/, "");
+}
+
+function redactResponseBody(body: string): string {
+  const normalized = body.replace(/\s+/g, " ").trim();
+  return normalized.length > 2000 ? `${normalized.slice(0, 2000)}...` : normalized;
+}
+
 export class PollinationsImageProvider implements ImageGenerationProvider {
   id = "pollinations";
   name = "Pollinations.AI";
@@ -87,82 +97,47 @@ export class PollinationsImageProvider implements ImageGenerationProvider {
     );
     const seed = Math.floor(Math.random() * 2147483647);
 
-    const endpointsToTry: Array<{ url: string; headers: Record<string, string> }> = [];
+    const apiBaseUrl = resolvePollinationsBaseUrl();
+    const requestUrl = new URL(`${apiBaseUrl}/prompt/${encodeURIComponent(prompt)}`);
+    requestUrl.searchParams.set("model", model);
+    requestUrl.searchParams.set("width", String(width));
+    requestUrl.searchParams.set("height", String(height));
+    requestUrl.searchParams.set("seed", String(seed));
+    requestUrl.searchParams.set("nologo", "true");
 
-    // 1. Primary endpoint: https://image.pollinations.ai/prompt/{prompt}
-    const primaryUrl = new URL(`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`);
-    primaryUrl.searchParams.set("model", model);
-    primaryUrl.searchParams.set("width", String(width));
-    primaryUrl.searchParams.set("height", String(height));
-    primaryUrl.searchParams.set("seed", String(seed));
-    primaryUrl.searchParams.set("nologo", "true");
-
-    const primaryHeaders: Record<string, string> = {
+    const requestHeaders: Record<string, string> = {
       Accept: "image/*, application/json",
       "User-Agent": "ArchAI-Studio/1.0",
     };
 
     if (apiKey) {
-      primaryHeaders["Authorization"] = `Bearer ${apiKey}`;
+      requestHeaders.Authorization = `Bearer ${apiKey}`;
     }
 
-    endpointsToTry.push({
-      url: primaryUrl.toString(),
-      headers: primaryHeaders,
-    });
-
-    // 2. Secondary fallback endpoint: https://gen.pollinations.ai/image/{prompt}
-    const fallbackUrl = new URL(`https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}`);
-    fallbackUrl.searchParams.set("model", model);
-    fallbackUrl.searchParams.set("width", String(width));
-    fallbackUrl.searchParams.set("height", String(height));
-    fallbackUrl.searchParams.set("seed", String(seed));
-    fallbackUrl.searchParams.set("nologo", "true");
-
-    const fallbackHeaders: Record<string, string> = {
-      Accept: "image/*, application/json",
-      "User-Agent": "ArchAI-Studio/1.0",
-    };
-
-    if (apiKey) {
-      fallbackHeaders["Authorization"] = `Bearer ${apiKey}`;
-    }
-
-    endpointsToTry.push({
-      url: fallbackUrl.toString(),
-      headers: fallbackHeaders,
-    });
-
-    let lastError: any = null;
-
-    for (let i = 0; i < endpointsToTry.length; i++) {
-      const target = endpointsToTry[i];
-      try {
+    try {
         const signal = AbortSignal.timeout(45000);
-        const response = await fetch(target.url, {
+        const response = await fetch(requestUrl, {
           method: "GET",
-          headers: target.headers,
+          headers: requestHeaders,
           signal,
         });
 
+        const contentType = response.headers.get("content-type")?.toLowerCase() || "";
+
         if (!response.ok) {
           const status = response.status;
-          let responseBodyText = "";
-          try {
-            responseBodyText = await response.text();
-          } catch {
-            // ignore
-          }
+          const responseBodyText = await response.text();
+
+          console.error("Pollinations request failed", {
+            url: requestUrl.toString(),
+            status,
+            contentType: contentType || "missing",
+            responseText: redactResponseBody(responseBodyText),
+            apiKeyConfigured: Boolean(apiKey),
+            authorizationSent: Boolean(requestHeaders.Authorization),
+          });
 
           const lowerBody = responseBodyText.toLowerCase();
-
-          // If authenticated endpoint failed due to invalid/missing key, try next candidate
-          if (
-            (status === 401 || status === 403 || lowerBody.includes("unauthorized") || lowerBody.includes("api key is required")) &&
-            i < endpointsToTry.length - 1
-          ) {
-            continue;
-          }
 
           // 1. Authentication Error Handling (if final attempt)
           if (
@@ -201,17 +176,40 @@ export class PollinationsImageProvider implements ImageGenerationProvider {
           }
 
           let parsedMessage = "";
-          try {
-            const parsed = JSON.parse(responseBodyText);
-            parsedMessage = parsed?.error?.message || parsed?.message || "";
-          } catch {
-            // not json
+          if (contentType.includes("application/json") || contentType.includes("+json")) {
+            try {
+              const parsed = JSON.parse(responseBodyText);
+              parsedMessage = parsed?.error?.message || parsed?.message || "";
+            } catch {
+              parsedMessage = "Invalid JSON error response from Pollinations.";
+            }
+          } else if (contentType.includes("text/html") || lowerBody.startsWith("<!doctype html") || lowerBody.startsWith("<html")) {
+            parsedMessage = `Pollinations returned an HTML error page (HTTP ${status}). Check the API base URL, route, proxy, and authentication configuration.`;
           }
 
           throw new Error(parsedMessage || `Pollinations API request failed with status ${status}`);
         }
 
-        const contentType = response.headers.get("content-type") || "image/jpeg";
+        if (!contentType.startsWith("image/")) {
+          const responseBodyText = await response.text();
+          console.error("Pollinations returned a non-image response", {
+            url: requestUrl.toString(),
+            status: response.status,
+            contentType: contentType || "missing",
+            responseText: redactResponseBody(responseBodyText),
+            apiKeyConfigured: Boolean(apiKey),
+            authorizationSent: Boolean(requestHeaders.Authorization),
+          });
+
+          if (contentType.includes("text/html") || responseBodyText.trim().startsWith("<")) {
+            throw new ProviderUnavailableError(
+              "Pollinations returned an HTML response instead of an image. Check the API endpoint, proxy, and server configuration."
+            );
+          }
+
+          throw new ProviderUnavailableError("Pollinations returned an unexpected response instead of an image.");
+        }
+
         const buffer = Buffer.from(await response.arrayBuffer());
 
         if (buffer.length === 0) {
@@ -228,15 +226,7 @@ export class PollinationsImageProvider implements ImageGenerationProvider {
           aspectRatio: options.aspectRatio || "1:1",
           note: `Generated with ${model} on Pollinations.AI`,
         };
-      } catch (err: any) {
-        lastError = err;
-        if (i < endpointsToTry.length - 1) {
-          continue;
-        }
-      }
-    }
-
-    if (lastError) {
+    } catch (lastError: any) {
       if (
         lastError instanceof ProviderAuthError ||
         lastError instanceof ProviderQuotaError ||
@@ -276,8 +266,6 @@ export class PollinationsImageProvider implements ImageGenerationProvider {
 
       throw new Error(errMsg || "Image generation failed");
     }
-
-    throw new ProviderUnavailableError("Image generation is temporarily unavailable.");
   }
 
   async editImage(_options: GenerateImageOptions): Promise<GenerateImageResult> {
