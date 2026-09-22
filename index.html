@@ -15,7 +15,15 @@
   </head>
   <body class="bg-[#03040d] text-[#f8f8fc] selection:bg-[#5545ff]/40 selection:text-white antialiased overflow-x-hidden">
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <link rel="stylesheet" href="./assets/index-BZunrk-E.css" />
+    <script type="module">
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = ['localhost', '127.0.0.1'].includes(location.hostname)
+        ? '/src/main.tsx'
+        : './assets/index-DN_HK-OZ.js';
+      document.body.appendChild(script);
+    </script>
   </body>
 </html>
 
