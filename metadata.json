@@ -1,0 +1,6 @@
+{
+  "name": "ArchAI",
+  "description": "Modern dark SaaS landing page and generative studio for MAGE PRO AI image-generation platform, powered by FLUX.1 and multi-provider engines with Image-to-Image synthesis and interactive prompt exploration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

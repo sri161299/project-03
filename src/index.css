@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --font-primary: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-secondary: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-text: 'Tenor Sans', sans-serif;
+  --font-accent: 'Tenor Sans', sans-serif;
+}
+
+@layer base {
+  :root {
+    --bg-dark: #03040d;
+    --bg-card: rgba(18, 20, 46, 0.65);
+    --accent-primary: #5545ff;
+    --accent-violet: #7568ff;
+    --accent-glow: rgba(117, 104, 255, 0.45);
+    --border-subtle: rgba(120, 100, 255, 0.22);
+    --border-glow: rgba(140, 120, 255, 0.5);
+  }
+
+  body {
+    font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-dark);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  p,
+  .font-text,
+  .font-accent,
+  .font-serif-display {
+    font-family: 'Tenor Sans', sans-serif;
+    letter-spacing: 0.015em;
+  }
+
+  .font-primary,
+  .font-secondary {
+    font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+@keyframes subtleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float-slow {
+  animation: subtleFloat 6s ease-in-out infinite;
+}

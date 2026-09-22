@@ -1,0 +1,205 @@
+import { IdeaThumb, GalleryItem, GenerationVariant } from '../types';
+
+export const EXPLORE_IDEAS: IdeaThumb[] = [
+  {
+    id: 'abstract-human',
+    title: 'Abstract Figure',
+    tag: 'Abstract 3D',
+    category: 'image',
+    prompt: 'Abstract iridescent human figure surrounded by cosmic violet smoke and liquid crystal particles, 8k octane render',
+    imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 'cyber-leopard',
+    title: 'Cyber Wildlife',
+    tag: 'Animals',
+    category: 'image',
+    prompt: 'Cybernetic snow leopard with glowing electric sapphire eyes resting on obsidian mountain ledge, hyper-realistic, 8k',
+    imageUrl: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 'fantasy-sorceress',
+    title: 'Fantasy Mage',
+    tag: 'Fantasy',
+    category: 'image',
+    prompt: 'Celestial elven sorceress in flowing dark violet silk gown weaving constellation magic in deep cosmos, cinematic portrait 8k',
+    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 'midnight-lotus',
+    title: 'Neon Bloom',
+    tag: 'Flowers',
+    category: 'illustration',
+    prompt: 'Bioluminescent midnight lotus blooming in still obsidian water, glowing purple petals with golden stamen dust, macro 8k',
+    imageUrl: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 'floating-islands',
+    title: 'Dream World',
+    tag: 'Landscapes',
+    category: '3d',
+    prompt: 'Surreal floating crystalline islands with glowing lavender waterfalls cascading into cloud sea, twin moons at twilight, 8k',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80',
+  },
+];
+
+export const GALLERY_ITEMS: GalleryItem[] = [
+  // Animals
+  {
+    id: 'animal-1',
+    title: 'Cybernetic Snow Leopard',
+    tag: 'Wildlife AI',
+    category: 'Animals',
+    span: 'tall',
+    imageUrl: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?auto=format&fit=crop&w=900&q=85',
+    prompt: 'Cybernetic snow leopard with glowing electric sapphire eyes resting on obsidian mountain ledge, hyper-realistic fur texture, volumetric moonlight, 8k',
+    aspectRatio: '3:4',
+    seed: 948271,
+  },
+  {
+    id: 'animal-2',
+    title: 'Celestial Fox',
+    tag: 'Mythical Beast',
+    category: 'Animals',
+    span: 'normal',
+    imageUrl: 'https://images.unsplash.com/photo-1474511320723-9a56873867b5?auto=format&fit=crop&w=800&q=85',
+    prompt: 'Mythical celestial fox with glowing violet fur and starlight aura in a tranquil bamboo grove, fantasy digital art, cinematic depth of field',
+    aspectRatio: '1:1',
+    seed: 412093,
+  },
+  {
+    id: 'animal-3',
+    title: 'Prismatic Hummingbird',
+    tag: 'Macro Nature',
+    category: 'Animals',
+    span: 'normal',
+    imageUrl: 'https://images.unsplash.com/photo-1520808663317-647b476a81b9?auto=format&fit=crop&w=800&q=85',
+    prompt: 'Hummingbird in mid-flight drinking nectar from glowing neon flower, liquid crystal feathers refracting rainbow light, high-speed photography',
+    aspectRatio: '1:1',
+    seed: 884712,
+  },
+
+  // Fantasy Characters
+  {
+    id: 'fantasy-1',
+    title: 'Starlight Sorceress',
+    tag: 'High Fantasy',
+    category: 'Fantasy Characters',
+    span: 'tall',
+    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=85',
+    prompt: 'Celestial elven sorceress in flowing dark violet silk gown weaving constellation magic in deep cosmos, cinematic portrait 8k',
+    aspectRatio: '3:4',
+    seed: 120485,
+  },
+  {
+    id: 'fantasy-2',
+    title: 'Runic Cyber Valkyrie',
+    tag: 'Sci-Fi Fantasy',
+    category: 'Fantasy Characters',
+    span: 'normal',
+    imageUrl: 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=800&q=85',
+    prompt: 'Futuristic armored cyber valkyrie with holographic titanium wings and glowing neon visor standing atop skyscraper rain',
+    aspectRatio: '1:1',
+    seed: 391820,
+  },
+
+  // Landscapes
+  {
+    id: 'landscape-1',
+    title: 'Lavender Archipelago',
+    tag: 'Cosmic World',
+    category: 'Landscapes',
+    span: 'wide',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=85',
+    prompt: 'Surreal floating crystalline islands with glowing lavender waterfalls cascading into cloud sea, twin moons at twilight, Octane render 8K',
+    aspectRatio: '16:9',
+    seed: 582109,
+  },
+  {
+    id: 'landscape-2',
+    title: 'Bioluminescent Spire Canyon',
+    tag: 'Alien Terrain',
+    category: 'Landscapes',
+    span: 'normal',
+    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=85',
+    prompt: 'Deep otherworldly canyon with towering glowing violet rock spires and reflective mineral pools under starry aurora night sky',
+    aspectRatio: '1:1',
+    seed: 712984,
+  },
+  {
+    id: 'landscape-3',
+    title: 'Neo-Tokyo Rainstorm',
+    tag: 'Cyber Architecture',
+    category: 'Landscapes',
+    span: 'normal',
+    imageUrl: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=85',
+    prompt: 'Futuristic megacity with towering neon holographic skyscrapers reflected in wet asphalt streets, flying vehicles, cinematic wide angle',
+    aspectRatio: '1:1',
+    seed: 284910,
+  },
+
+  // Flowers
+  {
+    id: 'flower-1',
+    title: 'Bioluminescent Midnight Lotus',
+    tag: 'Glowing Flora',
+    category: 'Flowers',
+    span: 'normal',
+    imageUrl: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=800&q=85',
+    prompt: 'Bioluminescent midnight lotus blooming in still obsidian water, glowing purple petals with golden stamen dust, macro photography 8k',
+    aspectRatio: '1:1',
+    seed: 928374,
+  },
+  {
+    id: 'flower-3',
+    title: 'Neon Prismatic Peony',
+    tag: 'Ultraviolet Bloom',
+    category: 'Flowers',
+    span: 'normal',
+    imageUrl: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=800&q=85',
+    prompt: 'Giant iridescent peony flower glowing with internal ultraviolet light, hyper-detailed petals with morning dew droplets',
+    aspectRatio: '1:1',
+    seed: 647382,
+  },
+
+  // Abstract Art
+  {
+    id: 'abstract-2',
+    title: 'Prismatic Monolith Void',
+    tag: 'Minimalist 3D',
+    category: 'Abstract Art',
+    span: 'normal',
+    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=85',
+    prompt: 'Reflective dark glass obelisk refracting vibrant spectral rainbow lasers in a pitch black minimalist gallery, 3D render 8k',
+    aspectRatio: '1:1',
+    seed: 382910,
+  },
+  {
+    id: 'abstract-3',
+    title: 'Neural Synapse Filament',
+    tag: 'Generative Grid',
+    category: 'Abstract Art',
+    span: 'wide',
+    imageUrl: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=1200&q=85',
+    prompt: 'Abstract visual representation of deep neural networks as glowing purple and cyan fiber optic filaments weaving through dark space',
+    aspectRatio: '16:9',
+    seed: 748291,
+  },
+];
+
+export const DEFAULT_GENERATION_VARIANTS: GenerationVariant[] = [
+  {
+    id: 'var-a',
+    label: 'Primary Variant',
+    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85',
+    resolution: '1024 × 1024',
+  },
+];
+
+export const TRUSTED_COMPANIES = [
+  { name: 'Netdot', tag: 'Cloud Mesh' },
+  { name: 'Sparkweb', tag: 'Web Scale' },
+  { name: 'BrandBee', tag: 'Brand Studio' },
+  { name: 'Digitech', tag: 'Core Systems' },
+  { name: 'Codelink', tag: 'Developer API' },
+];
